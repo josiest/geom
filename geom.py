@@ -1,3 +1,6 @@
+__license__ = "MIT"
+__docformat__ = 'reStructuredText'
+
 import numbers
 import math
 
@@ -6,7 +9,10 @@ EPS = 0.0001
 def set_tolerance(eps):
     """Set the error tolerance for which to compare floating point numbers.
     
-    Raises """
+    :param eps: error tolerance. Should be a positive number.
+    :raises ValueError: if eps is <= 0
+    :raises TypeError: if eps is not a numeric type
+    """
     if not isinstance(eps, numbers.Number):
         raise TypeError("epsilon must be a positive number")
     if eps <= 0:
@@ -16,7 +22,8 @@ def set_tolerance(eps):
 def is_numeric(N):
     """Determine if N is numeric.
 
-    N -- an object or a collection of objects
+    :param N: an object or list of objects
+    :return: True if N is numeric.
     """
     if '__iter__' in dir(N):
         return False not in [isinstance(n, numbers.Number) for n in N]

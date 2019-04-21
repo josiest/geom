@@ -10,11 +10,20 @@ Welcome to geom's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+About
+-----
 
+geom is a utility module for working with geometry in attempt to be pythonic.
 
-Indices and tables
-==================
+Reference
+---------
+.. automodule:: geom
+.. autofunction:: set_tolerance
+.. autofunction:: is_numeric
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. Indices and tables
+.. ==================
+.. 
+.. * :ref:`genindex`
+.. * :ref:`modindex`
+.. * :ref:`search`
