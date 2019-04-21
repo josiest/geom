@@ -4,6 +4,9 @@ import math
 EPS = 0.0001
 
 def set_tolerance(eps):
+    """Set the error tolerance for which to compare floating point numbers.
+    
+    Raises """
     if not isinstance(eps, numbers.Number):
         raise TypeError("epsilon must be a positive number")
     if eps <= 0:
