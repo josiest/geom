@@ -55,3 +55,12 @@ def test_getitem():
                     getattr(v, attr)
             else:
                 assert(getattr(v, attr) == expected['attr'][i][j])
+
+def test_mag():
+    cases = ((0,), (1,), (3, 4), (1.0, 1.0), (0.1, 4.0, 79.0))
+    expected = (0, 1, 5, 2**0.5, 79.1013)
+    for components, e in zip(cases, expected):
+        v = geom.Vector(components)
+        assert(abs(v)-e < 0.0001)
+        assert(v.mag()-e < 0.0001)
+        assert(v.magSq()-(e**2) < 0.0001)

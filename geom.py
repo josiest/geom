@@ -32,9 +32,24 @@ def is_numeric(N):
 class Vector(object):
     """A Vector represents a mathematical vector for any dimension.
 
-    `len(v)` gives the dimension of the Vector `v.`
+    **Overloaded Operations**
 
-    `v[i]` gives the vector component in the ith dimension.
+    | `len(v)` gives the dimension of the vector `v`
+    | `abs(v)` gives the magnitude of the vector `v`
+    | `~v` gives the normalized version of the vector `v`
+    | `-v` gives the a vector in the opposite direction but same magnitude as `v`
+    | `v[i]` gives the vector component in the ith dimension.
+    | `a == b` compare two vectors for equality
+    | `a + b` adds two vectors together
+    | `a - b` subtracts the vector `b` from the vector `a`
+    | `a * m` multiplies all components of the vector `a` by a scalar `m`
+    | `a / m` divides all components of the vector `a` by a non-zero scalar `m`
+    | `a * b` computes the cross product of the 3D vector `a` with the 3D vector `b`
+    | `a @ b` computes the dot product of the the vector `a` and the vector `b`
+
+    For binary operations, as long as one of the arguments is a `geom.Vector`,
+    the other argument may be any form of numeric collection of the same
+    dimension.
     """
     __slots__ = '_components'
 
@@ -137,6 +152,7 @@ class Vector(object):
 
     @property
     def x(self):
+        """The x-component of a vector. Equivalent to `v[0]`"""
         return self[0]
     @x.setter
     def x(self, other):
@@ -144,6 +160,7 @@ class Vector(object):
 
     @property
     def y(self):
+        """The y-component of a vector. Equivalent to `v[1]`"""
         return self[1]
     @y.setter
     def y(self, value):
@@ -151,6 +168,7 @@ class Vector(object):
 
     @property
     def z(self):
+        """The z-component of a vector. Equivalent to `v[1]`"""
         return self[2]
     @z.setter
     def z(self, value):
