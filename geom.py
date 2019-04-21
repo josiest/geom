@@ -4,26 +4,25 @@ __docformat__ = 'reStructuredText'
 import numbers
 import math
 
-EPS = 0.0001
+"""Error tolerance used to compare floating points"""
+eps = 0.0001
 
-def set_tolerance(eps):
+def set_tolerance(epsilon):
     """Set the error tolerance for which to compare floating point numbers.
-    
-    :param eps: error tolerance. Should be a positive number.
-    :raises ValueError: if eps is <= 0
-    :raises TypeError: if eps is not a numeric type
+
+    `TypeError` is raised if `epsilon` isn't numeric. `ValueError` is raised if
+    `epsilon` isn't positive.
     """
-    if not isinstance(eps, numbers.Number):
+    if not isinstance(epsilon, numbers.Number):
         raise TypeError("epsilon must be a positive number")
-    if eps <= 0:
+    if epsilon <= 0:
         raise ValueError("epsilon must be positive")
-    EPS = eps
+    eps = epsilon
 
 def is_numeric(N):
-    """Determine if N is numeric.
+    """Determine if `N` is numeric.
 
-    :param N: an object or list of objects
-    :return: True if N is numeric.
+    `N` may be a single value or a collection.
     """
     if '__iter__' in dir(N):
         return False not in [isinstance(n, numbers.Number) for n in N]
@@ -31,9 +30,21 @@ def is_numeric(N):
         return isinstance(N, numbers.Number)
 
 class Vector(object):
+    """A Vector represents a mathematical vector for any dimension.
+
+    `len(v)` gives the dimension of the Vector `v.`
+
+    `v[i]` gives the vector component in the ith dimension.
+    """
     __slots__ = '_components'
 
     def __init__(self, components):
+        """Create a vector from `components`
+
+        `components` should be a collection of numeric values. Initializing
+        a `Vector` with a collection of non-numeric values will raise a
+        `ValueError.`
+        """
         if not is_numeric(components):
             raise ValueError("components must be numeric values")
         self._components = list(components)
@@ -57,7 +68,7 @@ class Vector(object):
         if len(self) != len(other):
             raise ValueError("Vectors of different dimensions cannot be " +
                              "compared")
-        return False not in [abs(a-b) < EPS for a, b in zip(self, other)]
+        return False not in [abs(a-b) < eps for a, b in zip(self, other)]
 
     def __add__(self, other):
         if not is_numeric(other):

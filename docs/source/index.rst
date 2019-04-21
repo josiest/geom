@@ -12,14 +12,26 @@ Welcome to geom's documentation!
 
 About
 -----
-
-geom is a utility module for working with geometry in attempt to be pythonic.
+geom (pronounced "jom") is a a module for working with geometry in a pythonic
+way. The motivation behind it's development was to use as a base for collision
+detection, but the functionality offered by the module offers much more depth.
 
 Reference
 ---------
 .. automodule:: geom
+
+Functions
+---------
 .. autofunction:: set_tolerance
 .. autofunction:: is_numeric
+
+Classes
+-------
+.. autoclass:: Vector
+
+Vector Methods
+--------------
+.. automethod:: Vector.__init__
 
 .. Indices and tables
 .. ==================
