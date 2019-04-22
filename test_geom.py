@@ -4,7 +4,7 @@ import pytest
 def test_epsilon():
     assert(abs(geom.eps - 0.0001) < 0.0001)
     geom.set_tolerance(0.01)
-    assert(abs(geom.eps - 0.01) < 0.01)
+    assert(abs(geom.eps - 0.01) < 0.00001)
     with pytest.raises(TypeError):
         geom.set_tolerance('0.001')
     with pytest.raises(ValueError):
@@ -21,7 +21,9 @@ def test_is_numeric():
     assert(geom.is_numeric({1.0, 2.0, 3.0}))
 
 def test_new_vector():
-    cases = [(1, 2, 3), [1.0, 2.0, 3.0], {1, 2, 3.0}, range(1,4)]
+    vc = object.__new__(geom.Vector)
+    vc._components = [1, 2, 3]
+    cases = [(1, 2, 3), [1.0, 2.0, 3.0], {1, 2, 3.0}, range(1,4), vc]
     expected = [1, 2, 3]
     for v in cases:
         assert(geom.Vector(v)._components == expected)
@@ -85,3 +87,103 @@ def test_vecnorm():
             m = v.x/n.x
             assert(m > 0)
             assert(False not in [abs(m-i/j) < 0.0001 for i, j in zip(v, n)])
+
+    with pytest.raises(ValueError):
+        ~geom.Vector((0, 0))
+
+def test_veceq():
+    A = ((0,), (3.33334,), (-12000, -57.42))
+    B = ((0,), (3.33333,), (-12000, -57.42))
+    for a, b in zip(A, B):
+        assert(geom.Vector(a) == geom.Vector(b))
+    geom.set_tolerance(0.000001)
+    A = ((-10000, 10000), (3.33334,), (2, 3, 4))
+    B = ((10000, -10000), (3.33333,), (3, 3, 3))
+    for a, b in zip(A, B):
+        assert(geom.Vector(a) != geom.Vector(b))
+
+def test_vecneg():
+    cases = ((0.0,), (1,), (-2, -3.0), (34.5, -22, 130))
+    expected = ((0.0,), (-1,), (2, 3.0), (-34.5, 22, -130))
+    for cv, ce in zip(cases, expected):
+        v = geom.Vector(cv)
+        e = geom.Vector(ce)
+        assert(e == -v)
+
+def test_vecadd():
+    A = ((0,), (1.34,), (-4, 6), (1900, 2000, 3000))
+    B = ((0,), (3,), (6, -4), (0.01, 1.01, 0.5))
+    esum = ((0,), (4.34,), (2, 2), (1900.01, 2001.01, 3000.5))
+    edifa = ((0,), (-1.66,), (-10, 10), (1899.99, 1998.99, 2999.5))
+    edifb = ((0,), (1.66,), (10, -10), (-1899.99, -1998.99, -2999.5))
+    for ca, cb, ces, ceda, cedb in zip(A, B, esum, edifa, edifb):
+        a = geom.Vector(ca)
+        b = geom.Vector(cb)
+
+        ms1 = geom.Vector(ca)
+        ms1.addOn(cb)
+
+        ms2 = geom.Vector(cb)
+        ms2.addOn(a)
+
+        mda1 = geom.Vector(ca)
+        mda2 = geom.Vector(ca)
+        mda1.takeAway(b)
+        mda2.takeAway(cb)
+
+        mdb1 = geom.Vector(cb)
+        mdb2 = geom.Vector(cb)
+        mdb1.takeAway(a)
+        mdb2.takeAway(ca)
+
+        es = geom.Vector(ces)
+        eda = geom.Vector(ceda)
+        edb = geom.Vector(cedb)
+
+        sums = (a+b, b+a, a+cb, ca+b, a.add(b), b.add(ca), ms1, ms2)
+        diffa = (a-b, a + -b, a-cb, ca-b, a.sub(b), a.sub(cb), mda1, mda2)
+        diffb = (b-a, b + -a, b-ca, cb-a, b.sub(a), b.sub(ca), mdb1, mdb2)
+
+        for s, da, db in zip(sums, diffa, diffb):
+            assert(s == es)
+            assert(da == eda)
+            assert(db == edb)
+
+    a = geom.Vector((1, 2))
+    bt = (3, '4')
+    bl = ((3, 4, 5), (), (2,))
+
+    with pytest.raises(ValueError):
+        a + bt
+    with pytest.raises(ValueError):
+        bt + a
+    with pytest.raises(ValueError):
+        a - bt
+    with pytest.raises(ValueError):
+        bt - a
+    with pytest.raises(ValueError):
+        a.add(bt)
+    with pytest.raises(ValueError):
+        a.sub(bt)
+    with pytest.raises(ValueError):
+        a.addOn(bt)
+    with pytest.raises(ValueError):
+        a.takeAway(bt)
+
+    for v in bl:
+        with pytest.raises(ValueError):
+            a + v
+        with pytest.raises(ValueError):
+            v + a
+        with pytest.raises(ValueError):
+            a - v
+        with pytest.raises(ValueError):
+            v - a
+        with pytest.raises(ValueError):
+            a.add(v)
+        with pytest.raises(ValueError):
+            a.sub(v)
+        with pytest.raises(ValueError):
+            a.addOn(v)
+        with pytest.raises(ValueError):
+            a.takeAway(v)

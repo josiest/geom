@@ -36,6 +36,10 @@ Vector Methods
 .. automethod:: Vector.magSq
 .. automethod:: Vector.norm
 .. automethod:: Vector.normalize
+.. automethod:: Vector.add
+.. automethod:: Vector.addOn
+.. automethod:: Vector.sub
+.. automethod:: Vector.takeAway
 
 .. Indices and tables
 .. ==================

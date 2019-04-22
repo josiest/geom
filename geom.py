@@ -13,6 +13,7 @@ def set_tolerance(epsilon):
     `TypeError` is raised if `epsilon` isn't numeric. `ValueError` is raised if
     `epsilon` isn't positive.
     """
+    global eps
     if not isinstance(epsilon, numbers.Number):
         raise TypeError("epsilon must be a positive number")
     if epsilon <= 0:
@@ -68,6 +69,12 @@ class Vector(object):
             raise ValueError("vectors cannot be empty")
         self._components = list(components)
 
+    def __str__(self):
+        return "<" + ", ".join([str(i) for i in self._components]) + ">"
+
+    def __repr__(self):
+        return "geom.Vector"+str(self)
+
     def __len__(self):
         return len(self._components)
 
@@ -75,6 +82,9 @@ class Vector(object):
         if i >= len(self):
             raise IndexError("Vector has less than %d dimensions" % (i+1))
         return self._components[i]
+
+    def __iter__(self):
+        yield from self._components
 
     def __setitem__(self, i, value):
         if not isinstance(value, numbers.Number):
@@ -186,7 +196,18 @@ class Vector(object):
         """Compute the square of the magnitude of this vector."""
         return sum([a*a for a in self])
 
+    def add(self, other):
+        """Return the sum of this vector and the vector `other`.
+        
+        Equivalent to `v + other`."""
+        return self + other
+
     def addOn(self, other):
+        """Add `other` to this vector.
+
+        Similar to `v.add(other)` or `v + other`, but `v.addOn(other)` mutates
+        this `v`.
+        """
         if not is_numeric(other):
             raise ValueError("Added vector must be numeric")
         if len(other) != len(self):
@@ -194,7 +215,19 @@ class Vector(object):
         for i in range(len(self)):
             self[i] += other[i]
 
+    def sub(self, other):
+        """Return the difference of this vector and the vector `other`.
+
+        Equivalent to `v - other`.
+        """
+        return self - other
+
     def takeAway(self, other):
+        """Subtract the vector `other` from this vector.
+
+        Similar to `v.sub(other)` or `v - other`, but `v.takeAway(other)`
+        mutates this vector.
+        """
         if not is_numeric(other):
             raise ValueError("Added vector must be numeric")
         if len(other) != len(self):
