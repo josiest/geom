@@ -24,21 +24,27 @@ def test_new_vector():
     cases = [(1, 2, 3), [1.0, 2.0, 3.0], {1, 2, 3.0}, range(1,4)]
     expected = [1, 2, 3]
     for v in cases:
-        assert geom.Vector(v)._components == expected
+        assert(geom.Vector(v)._components == expected)
+    with pytest.raises(ValueError):
+        geom.Vector(())
+    with pytest.raises(ValueError):
+        geom.Vector(('1', 2.0, 3))
+    with pytest.raises(TypeError):
+        geom.Vector(1)
 
 def test_veclen():
-    cases = [(), (0,), (0,0,0,0,0)]
-    expected = [0, 1, 5]
+    cases = ((0,), (0,0,0,0,0))
+    expected = (1, 5)
     for v, n in zip(cases, expected):
         assert(len(geom.Vector(v)) == n)
 
-def test_getitem():
+def test_vec_getitem():
     I = (0, 1, 2, 19)
     A = ('x', 'y', 'z')
-    V = [[2*i for i in range(n)] for n in range(4)]
+    V = [[2*i for i in range(n)] for n in range(1,4)]
     V.append([3*i for i in range(20)])
-    expected = {'index': ((), (0,), (0, 2), (0, 2, 4), (0, 3, 6, 57)),
-                'attr': ((), (0,), (0, 2), (0, 2, 4), (0, 3, 6))}
+    expected = {'index': ((0,), (0, 2), (0, 2, 4), (0, 3, 6, 57)),
+                'attr': ((0,), (0, 2), (0, 2, 4), (0, 3, 6))}
 
     for i, components in enumerate(V):
         v = geom.Vector(components)
@@ -56,7 +62,7 @@ def test_getitem():
             else:
                 assert(getattr(v, attr) == expected['attr'][i][j])
 
-def test_mag():
+def test_vecmag():
     cases = ((0,), (1,), (3, 4), (1.0, 1.0), (0.1, 4.0, 79.0))
     expected = (0, 1, 5, 2**0.5, 79.1013)
     for components, e in zip(cases, expected):
@@ -64,3 +70,18 @@ def test_mag():
         assert(abs(v)-e < 0.0001)
         assert(v.mag()-e < 0.0001)
         assert(v.magSq()-(e**2) < 0.0001)
+
+def test_vecnorm():
+    cases = ((1,), (3, 4), (0.1, 10, 100))
+    for components in cases:
+        v = geom.Vector(components)
+        n1 = ~v
+        n2 = v.norm()
+        n3 = geom.Vector(components)
+        n3.normalize()
+        for n in (n1, n2, n3):
+            assert n is not None
+            assert(abs(abs(n)-1.0) < 0.0001)
+            m = v.x/n.x
+            assert(m > 0)
+            assert(False not in [abs(m-i/j) < 0.0001 for i, j in zip(v, n)])

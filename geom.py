@@ -60,15 +60,19 @@ class Vector(object):
         a `Vector` with a collection of non-numeric values will raise a
         `ValueError.`
         """
+        if not hasattr(components, '__iter__'):
+            raise TypeError("components must be a collection")
         if not is_numeric(components):
             raise ValueError("components must be numeric values")
+        if len(components) == 0:
+            raise ValueError("vectors cannot be empty")
         self._components = list(components)
 
     def __len__(self):
         return len(self._components)
 
     def __getitem__(self, i):
-        if i > len(self):
+        if i >= len(self):
             raise IndexError("Vector has less than %d dimensions" % (i+1))
         return self._components[i]
 
@@ -174,11 +178,13 @@ class Vector(object):
     def z(self, value):
         self[2] = value
 
-    def magSq(self):
-        return sum([a*a for a in self])
-
     def mag(self):
+        """Compute the magnitude of this vector. Equivalent to `abs(v)`."""
         return abs(self)
+
+    def magSq(self):
+        """Compute the square of the magnitude of this vector."""
+        return sum([a*a for a in self])
 
     def addOn(self, other):
         if not is_numeric(other):

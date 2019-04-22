@@ -32,6 +32,8 @@ Classes
 Vector Methods
 --------------
 .. automethod:: Vector.__init__
+.. automethod:: Vector.mag
+.. automethod:: Vector.magSq
 
 .. Indices and tables
 .. ==================
