@@ -34,6 +34,8 @@ Vector Methods
 .. automethod:: Vector.__init__
 .. automethod:: Vector.mag
 .. automethod:: Vector.magSq
+.. automethod:: Vector.norm
+.. automethod:: Vector.normalize
 
 .. Indices and tables
 .. ==================

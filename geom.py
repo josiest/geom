@@ -215,6 +215,11 @@ class Vector(object):
             self[i] /= m
 
     def normalize(self):
+        """Normalize this vector.
+
+        Similar to `v.norm()` or `~v`, but `v.normalize()` mutates `v` instead
+        of returning a new vector.
+        """
         if abs(self) == 0:
             raise ValueError("Cannot normalize the zero vector")
         self.divBy(abs(self))
@@ -226,4 +231,5 @@ class Vector(object):
         return self * other
 
     def norm(self):
+        """Return a normalized version of this vector. Equivalent to `~v.`"""
         return ~self
