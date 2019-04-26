@@ -153,10 +153,12 @@ class Vector(object):
         return Vector([i/m for i in self])
 
     def __matmul__(self, other):
+        if not is_numeric(other):
+            raise TypeError("Can only perform dot produt on numeric vectors")
         if len(self) != len(other):
             raise ValueError("Cannot perform dot product on vectors of two " +
                              "different dimensions")
-        return sum([a*b for a, b in zip(a, b)])
+        return sum([a*b for a, b in zip(self, other)])
 
     def __rmatmul__(self, other):
         return self @ other
@@ -298,6 +300,12 @@ class Vector(object):
         self.divBy(abs(self))
 
     def dot(self, other):
+        """Return the dot product of this vector and other.
+        
+        Equivalent to `v @ other`. TypeError is raised if other is not numeric.
+        ValueError is raised if this vector and other are not of the same
+        dimension.
+        """
         return self @ other
 
     def cross(self, other):

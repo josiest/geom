@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to geom's documentation!
-================================
+geom Documentation
+==================
 
 .. toctree::
    :maxdepth: 2
@@ -40,6 +40,11 @@ Vector Methods
 .. automethod:: Vector.addOn
 .. automethod:: Vector.sub
 .. automethod:: Vector.takeAway
+.. automethod:: Vector.mul
+.. automethod:: Vector.mulBy
+.. automethod:: Vector.div
+.. automethod:: Vector.divBy
+.. automethod:: Vector.dot
 
 .. Indices and tables
 .. ==================

@@ -199,3 +199,30 @@ def test_vecmul():
     for test in tests:
         with pytest.raises(ZeroDivisionError):
             eval(test % '0')
+
+def test_vecdot():
+    A = ((0,), (1,), (0.003, 0.004), (4123213.0, 12093201, 3298928))
+    B = ((30,), (0.5,), (-0.008, 0.006), (2, 3.3, 4.01))
+    expected = (0, 0.5, 0, 61382690.58)
+    for a, b, e in zip(A, B, expected):
+        v = geom.Vector(a);
+        assert(abs((v @ b) -  e) < 0.001)
+        assert(abs((b @ v) - e) < 0.001)
+        assert(abs(v.dot(b) - e) < 0.001)
+
+    A = ((1,), (1, 1), (1, 1, 1))
+    BT = (("zero",), ((1, 2), (3, 4)), (True, 0, "False"))
+    tests = ("{0} @ {1}", "{1} @ {0}", "{0}.dot({1})")
+    for a, bt in zip(A, BT):
+        av = geom.Vector(a)
+        for test in tests:
+            with pytest.raises(TypeError):
+                eval(test.format('av', 'bt'))
+
+    A = ((1,), (1, 1, 1))
+    b = (1, 1)
+    for a in A:
+        av = geom.Vector(a)
+        for test in tests:
+            with pytest.raises(ValueError):
+                eval(test.format('av', 'b'))
