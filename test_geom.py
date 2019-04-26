@@ -19,6 +19,7 @@ def test_is_numeric():
     assert(geom.is_numeric([1.0, 2, 3.0012]))
     assert(not geom.is_numeric(('1', 2, 3.0)))
     assert(geom.is_numeric({1.0, 2.0, 3.0}))
+    assert(not geom.is_numeric(True))
 
 def test_new_vector():
     vc = object.__new__(geom.Vector)
@@ -29,7 +30,7 @@ def test_new_vector():
         assert(geom.Vector(v)._components == expected)
     with pytest.raises(ValueError):
         geom.Vector(())
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         geom.Vector(('1', 2.0, 3))
     with pytest.raises(TypeError):
         geom.Vector(1)
@@ -153,37 +154,48 @@ def test_vecadd():
     bt = (3, '4')
     bl = ((3, 4, 5), (), (2,))
 
-    with pytest.raises(ValueError):
-        a + bt
-    with pytest.raises(ValueError):
-        bt + a
-    with pytest.raises(ValueError):
-        a - bt
-    with pytest.raises(ValueError):
-        bt - a
-    with pytest.raises(ValueError):
-        a.add(bt)
-    with pytest.raises(ValueError):
-        a.sub(bt)
-    with pytest.raises(ValueError):
-        a.addOn(bt)
-    with pytest.raises(ValueError):
-        a.takeAway(bt)
+    tests = ['a + %s', '%s + a', 'a - %s', 'a.add(%s)', 'a.sub(%s)',
+             'a.addOn(%s)', 'a.takeAway(%s)']
+    for test in tests:
+        with pytest.raises(TypeError):
+            eval(test % 'bt')
+        for v in bl:
+            with pytest.raises(ValueError):
+                eval(test % 'v')
 
-    for v in bl:
-        with pytest.raises(ValueError):
-            a + v
-        with pytest.raises(ValueError):
-            v + a
-        with pytest.raises(ValueError):
-            a - v
-        with pytest.raises(ValueError):
-            v - a
-        with pytest.raises(ValueError):
-            a.add(v)
-        with pytest.raises(ValueError):
-            a.sub(v)
-        with pytest.raises(ValueError):
-            a.addOn(v)
-        with pytest.raises(ValueError):
-            a.takeAway(v)
+def test_vecmul():
+    C = ((0,), (133333,), (3, -4.5), (-2.0, -1.5, -1.0))
+    E = ((0,), (-266666,), (0, 0), (66.6, 49.95, 33.3))
+    M = (30, -2, 0, -33.3)
+    for c, e, m in zip(C, E, M):
+        v = geom.Vector(c)
+        mv = geom.Vector(c)
+        mv.mulBy(m)
+        assert(m*v == e)
+        assert(v*m == e)
+        assert(v.mul(m) == e)
+        assert(mv == e)
+
+    E = ((0,), (1.0,), (-6, 9), (-0.5, -0.375, -0.25))
+    D = (1, 133333, -0.5, 4)
+    for c, e, d in zip(C, E, D):
+        v = geom.Vector(c)
+        dv = geom.Vector(c)
+        dv.divBy(d)
+        assert(v/d == e)
+        assert(v.div(d) == e)
+        assert(dv == e)
+
+    v = geom.Vector(range(1, 4))
+    tests = ("v * %s", "%s * v", "v.add(%s)", "v.addOn(%s)",
+             "v / %s", "v.div(%s)", "v.divBy(%s)")
+    bad = ("'3'", 'True', 'None', (3, 4))
+    for bt in bad:
+        for test in tests:
+            with pytest.raises(TypeError):
+                eval(test % bt)
+
+    tests = ("v / %s", "v.div(%s)", "v.divBy(%s)")
+    for test in tests:
+        with pytest.raises(ZeroDivisionError):
+            eval(test % '0')

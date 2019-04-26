@@ -14,7 +14,7 @@ def set_tolerance(epsilon):
     `epsilon` isn't positive.
     """
     global eps
-    if not isinstance(epsilon, numbers.Number):
+    if not isinstance(epsilon, numbers.Number) or isinstance(epsilon, bool):
         raise TypeError("epsilon must be a positive number")
     if epsilon <= 0:
         raise ValueError("epsilon must be positive")
@@ -25,10 +25,12 @@ def is_numeric(N):
 
     `N` may be a single value or a collection.
     """
+    def is_num(n):
+        return isinstance(n, numbers.Number) and (not isinstance(n, bool))
     if '__iter__' in dir(N):
-        return False not in [isinstance(n, numbers.Number) for n in N]
+        return False not in [is_num(n) for n in N]
     else:
-        return isinstance(N, numbers.Number)
+        return is_num(N)
 
 class Vector(object):
     """A Vector represents a mathematical vector for any dimension.
@@ -59,12 +61,13 @@ class Vector(object):
 
         `components` should be a collection of numeric values. Initializing
         a `Vector` with a collection of non-numeric values will raise a
-        `ValueError.`
+        `TypeError.` ValueError is raised if Vector is initialized with no
+        components.
         """
         if not hasattr(components, '__iter__'):
             raise TypeError("components must be a collection")
         if not is_numeric(components):
-            raise ValueError("components must be numeric values")
+            raise TypeError("components must be numeric values")
         if len(components) == 0:
             raise ValueError("vectors cannot be empty")
         self._components = list(components)
@@ -73,7 +76,7 @@ class Vector(object):
         return "<" + ", ".join([str(i) for i in self._components]) + ">"
 
     def __repr__(self):
-        return "geom.Vector"+str(self)
+        return "geom.Vector("+str(self._components)+")"
 
     def __len__(self):
         return len(self._components)
@@ -101,7 +104,7 @@ class Vector(object):
 
     def __add__(self, other):
         if not is_numeric(other):
-            raise ValueError("Added vector must have numeric components")
+            raise TypeError("Added vector must have numeric components")
         if len(other) != len(self):
             raise ValueError("Cannot add vectors of two different dimensions")
         return Vector([a + b for a, b in zip(self, other)])
@@ -111,7 +114,7 @@ class Vector(object):
 
     def __sub__(self, other):
         if not is_numeric(other):
-            raise ValueError("Subtracted vector must have numeric components")
+            raise TypeError("Subtracted vector must have numeric components")
         if len(other) != len(self):
             raise ValueError("Cannot subtract vectors of two different " +
                              "dimensions")
@@ -122,7 +125,7 @@ class Vector(object):
 
     def __mul__(self, other):
         if not is_numeric(other):
-            raise ValueError("Second argument must be numeric")
+            raise TypeError("Second argument must be numeric")
         if isinstance(other, numbers.Number):
             return Vector([other*c for c in self])
         if len(self) != 3 and len(other) != 3:
@@ -134,7 +137,7 @@ class Vector(object):
 
     def __rmul__(self, other):
         if not is_numeric(other):
-            raise ValueError("Second argument must be numeric")
+            raise TypeError("Second argument must be numeric")
         if isinstance(other, numbers.Number):
             return self * other
         if len(self) != 3 and len(other) != 3:
@@ -143,6 +146,11 @@ class Vector(object):
                         other[3]*self[1] - other[1]*self[3],
                         other[1]*self[2] - other[2]*self[1]])
         return cross
+
+    def __truediv__(self, m):
+        if not isinstance(m, numbers.Number) or isinstance(m, bool):
+            raise TypeError("Vectors can only be divided by a scalar")
+        return Vector([i/m for i in self])
 
     def __matmul__(self, other):
         if len(self) != len(other):
@@ -199,17 +207,20 @@ class Vector(object):
     def add(self, other):
         """Return the sum of this vector and the vector `other`.
         
-        Equivalent to `v + other`."""
+        Equivalent to `v + other`. TypeError is raised if `other` is not a
+        numeric collection the same length as this vector.
+        """
         return self + other
 
     def addOn(self, other):
         """Add `other` to this vector.
 
         Similar to `v.add(other)` or `v + other`, but `v.addOn(other)` mutates
-        this `v`.
+        this `v`. TypeError is raised if `other` is not a numeric collection.
+        ValueError is raised if the vectors are not the same length.
         """
         if not is_numeric(other):
-            raise ValueError("Added vector must be numeric")
+            raise TypeError("Added vector must be numeric")
         if len(other) != len(self):
             raise ValueError("Added vector must have same dimensions")
         for i in range(len(self)):
@@ -218,7 +229,8 @@ class Vector(object):
     def sub(self, other):
         """Return the difference of this vector and the vector `other`.
 
-        Equivalent to `v - other`.
+        Equivalent to `v - other`. TypeError is raised if `other` is not a
+        numeric collection the same length as this vector.
         """
         return self - other
 
@@ -226,23 +238,50 @@ class Vector(object):
         """Subtract the vector `other` from this vector.
 
         Similar to `v.sub(other)` or `v - other`, but `v.takeAway(other)`
-        mutates this vector.
+        mutates this vector. TypeError is raised if `other` is not a numeric
+        collection the same length as this vector.
         """
         if not is_numeric(other):
-            raise ValueError("Added vector must be numeric")
+            raise TypeError("Added vector must be numeric")
         if len(other) != len(self):
             raise ValueError("Added vector must have same dimensions")
         for i in range(len(self)):
             self[i] -= other[i]
 
+    def mul(self, m):
+        """Return the product of this vector and the scalar `m`.
+
+        Equivalent to `v * m`. TypeError is raised if m is not a number.
+        """
+        if not isinstance(m, numbers.Number) or isinstance(m, bool):
+            raise TypeError("Vectors can only be multiplied by scalars")
+        return Vector([i*m for i in self])
+
     def mulBy(self, m):
-        if not isinstance(m, numbers.Number):
+        """Multiply this vector by the scalar `m`.
+
+        Similar to `v * m` or `v.mul(m)`, but `v.mulBy(m)` mutates the vector
+        `v`. TypeError is raised if m isn't a number.
+        """
+        if not isinstance(m, numbers.Number) or isinstance(m, bool):
             raise TypeError("Vectors can only be multiplied by scalars")
         for i in range(len(self)):
             self[i] *= m
 
+    def div(self, m):
+        """Return the quotient of this vector the scalar `m`.
+        
+        Equivalent to `v / m`. TypeError is raised if m isn't a number.
+        """
+        return self/m
+
     def divBy(self, m):
-        if not isinstance(m, numbers.Number):
+        """Divide this vector by the scalar `m`.
+
+        Similar to `v / m` or `v.div(m)`, but `v.divBy(m)` mutates this the
+        vector `v`. TypeError is raised if m isn't a number.
+        """
+        if not isinstance(m, numbers.Number) or isinstance(m, bool):
             raise TypeError("Vectors can only be divided by scalars")
         for i in range(len(self)):
             self[i] /= m
@@ -251,7 +290,8 @@ class Vector(object):
         """Normalize this vector.
 
         Similar to `v.norm()` or `~v`, but `v.normalize()` mutates `v` instead
-        of returning a new vector.
+        of returning a new vector. ValueError is raised if this vector is
+        the zero vector.
         """
         if abs(self) == 0:
             raise ValueError("Cannot normalize the zero vector")
