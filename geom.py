@@ -47,7 +47,8 @@ class Vector(object):
     | `a - b` subtracts the vector `b` from the vector `a`
     | `a * m` multiplies all components of the vector `a` by a scalar `m`
     | `a / m` divides all components of the vector `a` by a non-zero scalar `m`
-    | `a * b` computes the cross product of the 3D vector `a` with the 3D vector `b`
+    | `a * b` computes the cross product of the `a` with `b`, where `a` and `b`
+    |           are numeric collections in R3.
     | `a @ b` computes the dot product of the the vector `a` and the vector `b`
 
     For binary operations, as long as one of the arguments is a `geom.Vector`,
@@ -128,11 +129,11 @@ class Vector(object):
             raise TypeError("Second argument must be numeric")
         if isinstance(other, numbers.Number):
             return Vector([other*c for c in self])
-        if len(self) != 3 and len(other) != 3:
-            raise ValueError("Can only perform 3D cross products")
-        cross = Vector([self[2]*other[3] - self[3]*other[2],
-                        self[3]*other[1] - self[1]*other[3],
-                        self[1]*other[2] - self[2]*other[1]])
+        if len(self) != 3 or len(other) != 3:
+            raise ValueError("Can only perform cross products in R3")
+        cross = Vector([self[1]*other[2] - self[2]*other[1],
+                        self[2]*other[0] - self[0]*other[2],
+                        self[0]*other[1] - self[1]*other[0]])
         return cross
 
     def __rmul__(self, other):
@@ -140,11 +141,11 @@ class Vector(object):
             raise TypeError("Second argument must be numeric")
         if isinstance(other, numbers.Number):
             return self * other
-        if len(self) != 3 and len(other) != 3:
-            raise ValueError("Can only perform 3D cross products")
-        cross = Vector([other[2]*self[3] - other[3]*self[2],
-                        other[3]*self[1] - other[1]*self[3],
-                        other[1]*self[2] - other[2]*self[1]])
+        if len(self) != 3 or len(other) != 3:
+            raise ValueError("Can only perform cross products in R3")
+        cross = Vector([other[1]*self[2] - other[2]*self[1],
+                        other[2]*self[0] - other[0]*self[2],
+                        other[0]*self[1] - other[1]*self[0]])
         return cross
 
     def __truediv__(self, m):
@@ -300,15 +301,21 @@ class Vector(object):
         self.divBy(abs(self))
 
     def dot(self, other):
-        """Return the dot product of this vector and other.
+        """Return the dot product of this vector and `other`.
         
-        Equivalent to `v @ other`. TypeError is raised if other is not numeric.
-        ValueError is raised if this vector and other are not of the same
-        dimension.
+        Equivalent to `v @ other`. TypeError is raised if `other` is not a
+        numeric collection. ValueError is raised if this vector and `other` are
+        not of the same dimension.
         """
         return self @ other
 
     def cross(self, other):
+        """Return the cross product of this vector and `other`.
+
+        Equivalent to `v * other`. TypeError is raised if `other` is not a
+        numeric collection. ValueError is raised if this vector and `other` are
+        not in R3.
+        """
         return self * other
 
     def norm(self):

@@ -226,3 +226,39 @@ def test_vecdot():
         for test in tests:
             with pytest.raises(ValueError):
                 eval(test.format('av', 'b'))
+
+def test_veccross():
+    A = ((0, 0, 0), (1.0, 0, 0), (-300000, 20003, -0.020012))
+    b = (3, 4, 5)
+    geom.set_tolerance(0.001)
+    expected = ((0, 0, 0), (0, -5.0, 4.0), (100015.08005, 1499999.939964,
+                                            -1260009))
+    for a, e in zip(A, expected):
+        av = geom.Vector(a);
+        ev = geom.Vector(e);
+        assert(av*b == ev)
+        assert(av.cross(b) == ev)
+
+    bv = geom.Vector(b)
+    assert(bv*A[1] != A[1]*bv)
+
+    BT = ((True, True, 1.0), False, ("3.0", 4.2, 12), "{3.3, 1.0 5.9}",
+          ((3, 4), (5, 6), (7, 8)))
+    tests = ("{0} * {1}", "{1} * {0}", "{0}.cross({1})")
+    for bt in BT:
+        for test in tests:
+            with pytest.raises(TypeError):
+                eval(test.format('bv', 'bt'))
+
+    BL = ((1,), (1, 2), (1, 2, 3, 4))
+    for bl in BL:
+        for test in tests:
+            with pytest.raises(ValueError):
+                eval(test.format('bv', 'bl'))
+
+    BL2 = ((2,), (3, 4), (5 ,6, 7, 8))
+    for bl, bl2 in zip(BL, BL2):
+        blv = geom.Vector(bl)
+        for test in tests:
+            with pytest.raises(ValueError):
+                eval(test.format('blv', 'bl2'))

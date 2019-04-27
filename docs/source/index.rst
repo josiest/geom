@@ -45,6 +45,7 @@ Vector Methods
 .. automethod:: Vector.div
 .. automethod:: Vector.divBy
 .. automethod:: Vector.dot
+.. automethod:: Vector.cross
 
 .. Indices and tables
 .. ==================
