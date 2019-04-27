@@ -74,6 +74,3 @@ venv.bak/
 # Spyder project settings
 .spyderproject
 .spyproject
-
-# TODO release module
-setup.py
