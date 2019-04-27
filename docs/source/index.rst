@@ -27,10 +27,13 @@ Functions
 
 Classes
 -------
+
+Vector
+------
 .. autoclass:: Vector
 
 Vector Methods
---------------
+^^^^^^^^^^^^^^
 .. automethod:: Vector.__init__
 .. automethod:: Vector.mag
 .. automethod:: Vector.magSq
@@ -46,6 +49,16 @@ Vector Methods
 .. automethod:: Vector.divBy
 .. automethod:: Vector.dot
 .. automethod:: Vector.cross
+
+Circle
+------
+.. autoclass:: Circle
+.. autoattribute:: Circle.center
+.. autoattribute:: Circle.radius
+
+Circle Methods
+^^^^^^^^^^^^^^
+.. automethod:: Circle.__init__
 
 .. Indices and tables
 .. ==================

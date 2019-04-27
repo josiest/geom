@@ -21,7 +21,7 @@ def test_is_numeric():
     assert(geom.is_numeric({1.0, 2.0, 3.0}))
     assert(not geom.is_numeric(True))
 
-def test_new_vector():
+def test_vecinit():
     vc = object.__new__(geom.Vector)
     vc._components = [1, 2, 3]
     cases = [(1, 2, 3), [1.0, 2.0, 3.0], {1, 2, 3.0}, range(1,4), vc]
@@ -41,7 +41,7 @@ def test_veclen():
     for v, n in zip(cases, expected):
         assert(len(geom.Vector(v)) == n)
 
-def test_vec_getitem():
+def test_vecgetitem():
     I = (0, 1, 2, 19)
     A = ('x', 'y', 'z')
     V = [[2*i for i in range(n)] for n in range(1,4)]
@@ -262,3 +262,39 @@ def test_veccross():
         for test in tests:
             with pytest.raises(ValueError):
                 eval(test.format('blv', 'bl2'))
+
+def test_circinit():
+    geom.set_tolerance(0.000001)
+    centers = ((0, 0), (-0.0001, -0.00023), (3002.0002, -4003.2093))
+    radii = (0, 0.00032, 5.0021)
+    for p, r in zip(centers, radii):
+        c1 = object.__new__(geom.Circle)
+        c1._center = geom.Vector(p)
+        c1._radius = r
+        c2 = geom.Circle(p, r)
+        assert(c1.center == c2.center)
+        assert(abs(c1.radius-c2.radius) < geom.eps)
+
+    with pytest.raises(TypeError):
+        geom.Circle('{1, 2}', 3)
+
+    class Test(object):
+        __slots__ = ['components']
+        def __iter__(self):
+            yield from self.components
+
+    a = object.__new__(Test)
+    a.components = [1, 2]
+    with pytest.raises(AttributeError):
+        geom.Circle(a, 3.00002)
+
+    with pytest.raises(ValueError):
+        geom.Circle((1,), 30000)
+    with pytest.raises(ValueError):
+        geom.Circle((1, 1, 1), 0.0001)
+
+    with pytest.raises(TypeError):
+        geom.Circle((1, 2), '3')
+
+    with pytest.raises(ValueError):
+        geom.Circle((20, 30), -39)

@@ -321,3 +321,52 @@ class Vector(object):
     def norm(self):
         """Return a normalized version of this vector. Equivalent to `~v.`"""
         return ~self
+
+class Circle(object):
+    """A Circle stores basic circle info and provides relevant useful methods.
+    """
+    __slots__ = ['_center', '_radius']
+    def __init__(self, center, radius):
+        """Create a circle with a given ``center`` and ``radius``.
+
+        TypeError is raised if center is not a numeric collection or if radius
+        is not a number. ValueError is raised if center is not in R2 or if
+        radius is not a real non-negative number.
+        """
+        self.center = center
+        self.radius = radius
+
+    @property
+    def center(self):
+        """The center of the circle.
+
+        center is stored as a Vector. Setting center will raise TypeError if
+        it's not numeric, AttributeError if has no length, and ValueError
+        if it's not in R2.
+        """
+        return self._center
+    @center.setter
+    def center(self, center):
+        if not is_numeric(center):
+            raise TypeError("center must be numeric")
+        if not hasattr(center, '__len__'):
+            raise AttributeError("center must have a length attribute")
+        if len(center) != 2:
+            raise ValueError("center must be in R2")
+        self._center = Vector(center)
+
+    @property
+    def radius(self):
+        """The radius of the circle.
+
+        Setting radius will raise TypeError if it's not numeric and ValueError
+        if it's negative.
+        """
+        return self._radius
+    @radius.setter
+    def radius(self, r):
+        if not is_numeric(r):
+            raise TypeError("radius must be numeric")
+        if r < 0:
+            raise ValueError("radius must be non-negative")
+        self._radius = r
