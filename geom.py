@@ -5,7 +5,7 @@ import numbers
 import math
 
 """Error tolerance used to compare floating points"""
-eps = 0.0001
+eps = 10**-6
 
 def set_tolerance(epsilon):
     """Set the error tolerance for which to compare floating point numbers.
@@ -403,6 +403,7 @@ class Circle(object):
             raise TypeError("circumference must be a number")
         if c < 0:
             raise ValueError("circumference must be non-negative")
+        self._radius = c/(2*math.pi)
 
     def scaled_by(self, m, attr="radius"):
         """Return a scaled Circle.

@@ -319,3 +319,22 @@ def test_circarea():
             c.area = test
     with pytest.raises(ValueError):
         c.area = -23.4123
+
+def test_circumference():
+    centers = ((0, 0), (-1.0, -1.0), (-1000000, 1000000), (0.000032, 0.02302))
+    radii = (.5/math.pi, 0, 203023, 15.76231)
+    circumferences = (0, 20*math.pi, 0.016, 2910292)
+    ecs = (1, 0, 1275631.13061952, 99.037514599)
+    ers = (0, 10, 0.00254648, 463187.3576408)
+    for p, r, c, ec, er in zip(centers, radii, circumferences, ecs, ers):
+        circle = geom.Circle(p, r)
+        assert(abs(circle.circumference-ec) < geom.eps)
+        circle.circumference = c
+        assert(abs(circle.radius-er) < geom.eps)
+    c = geom.Circle((0,0),1)
+    tests = (False, '33232', (5.0, 92.1, 2329))
+    for test in tests:
+        with pytest.raises(TypeError):
+            c.circumference = test
+    with pytest.raises(ValueError):
+        c.circumference = -1
