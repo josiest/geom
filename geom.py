@@ -405,18 +405,46 @@ class Circle(object):
             raise ValueError("circumference must be non-negative")
         self._radius = c/(2*math.pi)
 
-    def scaled_by(self, m, attr="radius"):
-        """Return a scaled Circle.
+    def scaled_to(self, m, attr="radius"):
+        """Return a new circle scaled to m.
 
-        By default, ``m`` is used to scale the radius. Calling scaled with
-        ``attr="area"`` cause ``m`` to scale the area instead of the radius.
-        ``scaled_by`` will raise TypeError if m isn't numeric and ValueError if
-        ``m`` is less than zero or if ``attr`` is neither "radius" nor "area".
+        By default, `m` is used to scale the radius. Calling ``scaled_to`` with
+        ``attr="area"`` cause `m` to scale the area instead of the radius, and
+        calling it with ``attr="circumference"`` will cauese `m` to scale the
+        circumference. ``scaled_to`` will raise TypeError if `m` isn't numeric
+        or if `attr` isn't a string, and ValueError if `m` is less than zero or
+        if `attr` isn't ``'radius'``, ``'circumference'``, or ``'area'``.
         """
         if not isinstance(m, numbers.Number) or isinstance(m, bool):
             raise TypeError("m must be a number")
         if m < 0:
             raise ValueError("m must be non-negative")
+        if not isinstance(attr, str):
+            raise TypeError("attr must be a string")
+        if attr.lower() not in ("radius", "area", "circumference"):
+            raise ValueError("attr must be 'radius', 'area', "
+                             "or 'circumference'")
+        if attr.lower() == 'radius':
+            return Circle(self.center, m)
+        elif attr.lower() == 'circumference':
+            return Circle(self.center, m/(2*math.pi))
+        return Circle(self.center, math.sqrt(m/math.pi))
+
+    def scaled_by(self, m, attr="radius"):
+        """Return a copy of this circle scaled by a factor of m.
+
+        By default, `m` is used to scale the radius. Calling ``scaled_by`` with
+        ``attr="area"`` cause `m` to scale the area instead of the radius.
+        ``scaled_by`` will raise TypeError if `m` isn't numeric or if `attr`
+        isn't a string, and ValueError if `m` is less than zero or if `attr` is
+        neither ``'radius'`` nor ``'area'``.
+        """
+        if not isinstance(m, numbers.Number) or isinstance(m, bool):
+            raise TypeError("m must be a number")
+        if m < 0:
+            raise ValueError("m must be non-negative")
+        if not isinstance(attr, str):
+            raise TypeError("attr must be a string")
         if attr.lower() not in ("radius", "area"):
             raise ValueError("attr must be either 'radius' or 'area'")
 

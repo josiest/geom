@@ -61,6 +61,8 @@ Circle
 Circle Methods
 ^^^^^^^^^^^^^^
 .. automethod:: Circle.__init__
+.. automethod:: Circle.scaled_to
+.. automethod:: Circle.scaled_by
 
 .. Indices and tables
 .. ==================

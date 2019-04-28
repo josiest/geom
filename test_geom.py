@@ -338,3 +338,62 @@ def test_circumference():
             c.circumference = test
     with pytest.raises(ValueError):
         c.circumference = -1
+
+def test_circscale():
+    centers = ((0, 0), (1.0 , 1), (-20391023, 23090233), (0.0203, 0.00312))
+    radii = (1, 0, 0.0549, 102930201)
+    m = 33.12
+    AM = (33.12, 204124, 204124, 0.001203)
+    er1 = 33.12
+    er2 = 5.27121172
+    er3 = 3.24690983
+    ER4 = (33.12, 0, 1.818288, 3409048257.12)
+    ER5 = (5.754997828, 0, 24.80386618, 3570060.98159599823)
+    for p, r, er4, er5, am in zip(centers, radii, ER4, ER5, AM):
+        circle = geom.Circle(p, r)
+        test = circle.scaled_to(m)
+        assert(abs(test.radius-er1) < geom.eps)
+        assert(abs(circle.radius-r) < geom.eps)
+        test = circle.scaled_to(m, 'circumference')
+        assert(abs(test.radius-er2) < geom.eps)
+        test = circle.scaled_to(m, 'area')
+        assert(abs(test.radius-er3) < geom.eps)
+        test = circle.scaled_by(m)
+        assert(abs(test.radius-er4) < geom.eps)
+        test = circle.scaled_by(am, 'area')
+        assert(abs(test.radius-er5) < geom.eps)
+
+    circle = geom.Circle((0,0), 1)
+    gat = ('radius', 'circumference', 'area')
+    bmt = ((3, 4, 5), False, '3.43')
+    for m, a in zip(bmt, gat):
+        with pytest.raises(TypeError):
+            circle.scaled_to(m, attr=a)
+        with pytest.raises(ValueError):
+            circle.scaled_to(-2.3)
+
+    gab = ('radius', 'area')
+    bmt = (geom.Circle((0,0), 1), range(1,2))
+    for m, a in zip(bmt, gab):
+        with pytest.raises(TypeError):
+            circle.scaled_by(m, attr=a)
+        with pytest.raises(ValueError):
+            circle.scaled_by(-3003202)
+
+    gm = (13.3, 0.005, 302393, 0)
+    batt = (True, 0.232, geom.Circle((0,0),1))
+    batv = ('spaghetti', 'r', 'a')
+    for m, at, av in zip(gm, batt, batv):
+        with pytest.raises(TypeError):
+            circle.scaled_to(m, attr=at)
+        with pytest.raises(ValueError):
+            circle.scaled_to(m, attr=av)
+
+    gm = (0.00232, 9000212.0302, 23)
+    babt = (range(1000), False, 2003)
+    babv = ('circumference', 'r', 'pasta')
+    for m, at, av in zip(gm, babt, babv):
+        with pytest.raises(TypeError):
+            circle.scaled_by(m, attr=at)
+        with pytest.raises(ValueError):
+            circle.scaled_by(m, attr=av)
