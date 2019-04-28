@@ -370,3 +370,61 @@ class Circle(object):
         if r < 0:
             raise ValueError("radius must be non-negative")
         self._radius = r
+
+    @property
+    def area(self):
+        """The area of the circle.
+
+        Defined as pi*r*r. Setting the area will change the radius of the
+        circle. Setting the area will raise TypeError if it's not numeric and
+        ValueError if it's less than zero.
+        """
+        return math.pi*self._radius*self._radius
+    @area.setter
+    def area(self, a):
+        if not isinstance(a, numbers.Number) or isinstance(a, bool):
+            raise TypeError("area must be a number")
+        if a < 0:
+            raise ValueError("area must be non-negative")
+        self._radius = math.sqrt(a/math.pi)
+
+    @property
+    def circumference(self):
+        """The circumference of the circle.
+
+        Defined as 2*pi*r. Setting the circumference will change the radius of
+        the circle; raises TypeError if it's not numeric and ValueError if it's
+        less than zero.
+        """
+        return 2*math.pi*self._radius
+    @circumference.setter
+    def circumference(self, c):
+        if not isinstance(c, numbers.Number) or isinstance(c, bool):
+            raise TypeError("circumference must be a number")
+        if c < 0:
+            raise ValueError("circumference must be non-negative")
+
+    def scaled_by(self, m, attr="radius"):
+        """Return a scaled Circle.
+
+        By default, ``m`` is used to scale the radius. Calling scaled with
+        ``attr="area"`` cause ``m`` to scale the area instead of the radius.
+        ``scaled_by`` will raise TypeError if m isn't numeric and ValueError if
+        ``m`` is less than zero or if ``attr`` is neither "radius" nor "area".
+        """
+        if not isinstance(m, numbers.Number) or isinstance(m, bool):
+            raise TypeError("m must be a number")
+        if m < 0:
+            raise ValueError("m must be non-negative")
+        if attr.lower() not in ("radius", "area"):
+            raise ValueError("attr must be either 'radius' or 'area'")
+
+        r = self.radius
+        if attr.lower() == 'radius':
+            r *= m
+        elif attr.lower() == 'area':
+            # pi r2^2 == m pi r1^2
+            # r2^2 = m r1^2
+            # r2 = m^.5 r1
+            r *= math.sqrt(m)
+        return Circle(self.center, r)

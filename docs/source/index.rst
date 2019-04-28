@@ -55,6 +55,7 @@ Circle
 .. autoclass:: Circle
 .. autoattribute:: Circle.center
 .. autoattribute:: Circle.radius
+.. autoattribute:: Circle.area
 
 Circle Methods
 ^^^^^^^^^^^^^^

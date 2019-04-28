@@ -1,5 +1,6 @@
 import geom
 import pytest
+import math
 
 def test_epsilon():
     assert(abs(geom.eps - 0.0001) < 0.0001)
@@ -298,3 +299,23 @@ def test_circinit():
 
     with pytest.raises(ValueError):
         geom.Circle((20, 30), -39)
+
+def test_circarea():
+    geom.set_tolerance(0.000001)
+    centers = ((0, 0), (-1.0, 1.0), (10000, 0.000001), (-7892822, 1902383))
+    radii = (33.19, 0, 0.02003, 78892)
+    areas = (0, 16*math.pi, 0.000025, 3423423)
+    eas = (3460.7033830094, 0, 0.0012604098, 19553108257.54975484)
+    ers = (0, 4, 0.00282095, 1043.8914625)
+    for center, r, area, ea, er in zip(centers, radii, areas, eas, ers):
+        c = geom.Circle(center, r)
+        assert(abs(c.area-ea) < geom.eps)
+        c.area = area
+        assert(abs(c.radius-er) < geom.eps)
+    c = geom.Circle((0,0),1)
+    tests = (True, "3.4", (5, 4))
+    for test in tests:
+        with pytest.raises(TypeError):
+            c.area = test
+    with pytest.raises(ValueError):
+        c.area = -23.4123
