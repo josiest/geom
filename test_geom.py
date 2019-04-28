@@ -397,3 +397,32 @@ def test_circscale():
             circle.scaled_by(m, attr=at)
         with pytest.raises(ValueError):
             circle.scaled_by(m, attr=av)
+
+def test_circmoved():
+    center = (23.4, -99)
+    circle = geom.Circle(center, 34.09)
+
+    posv = ((0, 0), (-12003032, 0.00012303))
+    for pos in posv:
+        c = circle.moved_to(pos)
+        assert(c.center == pos)
+
+    vecv = ([0, 0], (1, 0), {0, -203}, geom.Vector((0.3213, 45.23)))
+    posv = (center, (24.4, -99), (23.4, -302), (23.7213, -53.77))
+    for vec, pos in zip(vecv, posv):
+        c = circle.moved_by(vec)
+        assert(c.center == pos)
+
+    vecv = (33, 1.203, ('2', 3, 0.4), True, '(3, 4, 5)', geom.Circle((1,2),3))
+    for vec in vecv:
+        with pytest.raises(TypeError):
+            circle.moved_to(vec)
+        with pytest.raises(TypeError):
+            circle.moved_by(vec)
+
+    vecv = ((1.9,), (-43,), (203, -804.10, 0))
+    for vec in vecv:
+        with pytest.raises(ValueError):
+            circle.moved_to(vec)
+        with pytest.raises(ValueError):
+            circle.moved_by(vec)

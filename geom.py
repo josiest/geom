@@ -457,3 +457,27 @@ class Circle(object):
             # r2 = m^.5 r1
             r *= math.sqrt(m)
         return Circle(self.center, r)
+
+    def moved_to(self, position):
+        """Return a copy of this circle moved to the given position.
+
+        TypeError is raised if `position` is not a numeric collection.
+        ValueError is raised if `position` is not in R2.
+        """
+        if not is_numeric(position) or isinstance(position, numbers.Number):
+            raise TypeError("position must be a numeric collection")
+        if len(position) != 2:
+            raise ValueError("position must be in R2")
+        return Circle(position, self.radius)
+
+    def moved_by(self, vector):
+        """Return a copy of this circle moved by the given vector.
+
+        TypeError is raised if `vector` is not a numeric collection.
+        ValueError is raised if `position` is not in R2.
+        """
+        if not is_numeric(vector) or isinstance(vector, numbers.Number):
+            raise TypeError("vector must be a numeric collection")
+        if len(vector) != 2:
+            raise ValueError("vector must be in R2")
+        return Circle(self.center+vector, self.radius)
