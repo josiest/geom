@@ -65,6 +65,7 @@ Circle Methods
 .. automethod:: Circle.scaled_by
 .. automethod:: Circle.moved_to
 .. automethod:: Circle.moved_by
+.. automethod:: Circle.intersects
 
 .. Indices and tables
 .. ==================

@@ -426,3 +426,34 @@ def test_circmoved():
             circle.moved_to(vec)
         with pytest.raises(ValueError):
             circle.moved_by(vec)
+
+def test_circ_intersects():
+    geom.set_tolerance(10**-6)
+    posv1 = ((0, 0), (0.0023, -0.0031), (5782, 8792.1), (4, 5))
+    radii1 = (5, 0.00401, 33.9782, 1)
+    posv2 = ((0, 0), (-60793, 20034), (5750, 8778), (5, 4))
+    radii2 = (0, 64008.98293, 35, 10)
+    posv3 = ((0, 5.000002), (-60793, 20034), (-5782, -8792.1), (10, 10))
+    radii3 = (0.000001, 64008.98292, 33.9782, 0.5)
+    for pos1, r1, pos2, r2, pos3, r3 in zip(posv1, radii1, posv2, radii2,
+                                            posv3, radii3):
+        c1 = geom.Circle(pos1, r1)
+        c2 = geom.Circle(pos2, r2)
+        c3 = geom.Circle(pos3, r3)
+        assert(c1.intersects(c2))
+        assert(c2.intersects(c1))
+        assert(not c1.intersects(c3))
+        assert(not c3.intersects(c1))
+
+    circ = geom.Circle(posv1[0], radii1[0])
+    posv4 = ((0,0), (0, 5), (4*math.cos(math.pi/6),4*math.cos(math.pi/6)),
+             (1.29*math.cos(3*math.pi/8), 4.33*math.sin(3*math.pi/8)))
+    for pos1, pos2 in zip(posv3, posv4):
+        assert(not circ.intersects(pos1))
+        assert(circ.intersects(pos2))
+
+    tests = (((0,0), 5), 'Circle((0,0), 5)', {'center': (0,0),'radius':5})
+    for test in tests:
+        with pytest.raises(TypeError):
+            circ.intersects(test)
+

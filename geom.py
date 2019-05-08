@@ -336,6 +336,16 @@ class Circle(object):
         self.center = center
         self.radius = radius
 
+    def __str__(self):
+        s = 'Circle(<{}, {}>, {})'.format(self.center.x, self.center.y,
+                                          self.radius)
+        return s
+
+    def __repr__(self):
+        s = 'geom.Circle(<{}, {}>, {})'.format(self.center.x, self.center.y,
+                                               self.radius)
+        return s
+
     @property
     def center(self):
         """The center of the circle.
@@ -481,3 +491,22 @@ class Circle(object):
         if len(vector) != 2:
             raise ValueError("vector must be in R2")
         return Circle(self.center+vector, self.radius)
+
+    def intersects(self, other):
+        """Return true if this circle intersects the geometric object `other`.
+
+        `other` may be a numeric collection in R2, or some form of a circle.
+        TypeError is raised if other is neither of these things.
+        """
+        if {'center', 'radius'}.issubset(dir(other)):
+            d = other.center-self.center
+            r = other.radius+self.radius
+            return abs(d) <= r
+        try:
+            other = Vector(other)
+            other = other - self.center
+            return abs(other) <= self.radius
+        except (TypeError, ValueError):
+            pass
+        msg = 'Intersection with {} and Circle is undefined'.format(str(other))
+        raise TypeError(msg)
