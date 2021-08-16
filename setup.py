@@ -15,11 +15,11 @@ assert(geom_long_description is not None)
 
 setuptools.setup(
     name='geom',
-    version='0.1',
+    version='0.1.1',
     license='MIT',
     description='Useful functions and classes for geometry',
     author='Josie Thompson',
-    author_email='josiahst@gmail.com',
+    author_email='dot.slash.josie@gmail.com',
     long_description=geom_long_description,
     long_description_content_type="text/x-rst",
     url='https://github.com/josiest/geom',
