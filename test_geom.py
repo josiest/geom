@@ -93,17 +93,6 @@ def test_vecnorm():
     with pytest.raises(ValueError):
         ~geom.Vector((0, 0))
 
-def test_veceq():
-    A = ((0,), (3.33334,), (-12000, -57.42))
-    B = ((0,), (3.33333,), (-12000, -57.42))
-    for a, b in zip(A, B):
-        assert(geom.Vector(a) == geom.Vector(b))
-    geom.set_tolerance(0.000001)
-    A = ((-10000, 10000), (3.33334,), (2, 3, 4))
-    B = ((10000, -10000), (3.33333,), (3, 3, 3))
-    for a, b in zip(A, B):
-        assert(geom.Vector(a) != geom.Vector(b))
-
 def test_vecneg():
     cases = ((0.0,), (1,), (-2, -3.0), (34.5, -22, 130))
     expected = ((0.0,), (-1,), (2, 3.0), (-34.5, 22, -130))
@@ -168,14 +157,24 @@ def test_vecmul():
     C = ((0,), (133333,), (3, -4.5), (-2.0, -1.5, -1.0))
     E = ((0,), (-266666,), (0, 0), (66.6, 49.95, 33.3))
     M = (30, -2, 0, -33.3)
+
+    EPSILON = 10 ** -6
     for c, e, m in zip(C, E, M):
         v = geom.Vector(c)
         mv = geom.Vector(c)
         mv.mulBy(m)
-        assert(m*v == e)
-        assert(v*m == e)
-        assert(v.mul(m) == e)
-        assert(mv == e)
+
+        diff = m*v - e
+        assert diff.magSq() < EPSILON
+
+        diff = v*m - e
+        assert diff.magSq() < EPSILON
+
+        diff = v.mul(m) - e
+        assert diff.magSq() < EPSILON
+
+        dif = mv - e
+        assert diff.magSq() < EPSILON
 
     E = ((0,), (1.0,), (-6, 9), (-0.5, -0.375, -0.25))
     D = (1, 133333, -0.5, 4)
@@ -183,9 +182,15 @@ def test_vecmul():
         v = geom.Vector(c)
         dv = geom.Vector(c)
         dv.divBy(d)
-        assert(v/d == e)
-        assert(v.div(d) == e)
-        assert(dv == e)
+
+        diff = (v/d) - e
+        assert diff.magSq() < EPSILON
+
+        diff = v.div(d) - e
+        assert diff.magSq() < EPSILON
+
+        diff = dv - e
+        assert diff.magSq() < EPSILON
 
     v = geom.Vector(range(1, 4))
     tests = ("v * %s", "%s * v", "v.add(%s)", "v.addOn(%s)",
@@ -234,11 +239,17 @@ def test_veccross():
     geom.set_tolerance(0.001)
     expected = ((0, 0, 0), (0, -5.0, 4.0), (100015.08005, 1499999.939964,
                                             -1260009))
+
+    EPSILON = 0.001
     for a, e in zip(A, expected):
         av = geom.Vector(a);
         ev = geom.Vector(e);
-        assert(av*b == ev)
-        assert(av.cross(b) == ev)
+
+        diff = av*b - ev
+        assert diff.magSq() < EPSILON
+
+        diff = av.cross(b) - ev
+        assert diff.magSq() < EPSILON
 
     bv = geom.Vector(b)
     assert(bv*A[1] != A[1]*bv)

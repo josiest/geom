@@ -4,6 +4,10 @@ __docformat__ = 'reStructuredText'
 import numbers
 import math
 
+from typing import TypeVar
+from collections.abc import Iterable
+Numeric = TypeVar("Numeric", int, float, numbers.Number)
+
 """Error tolerance used to compare floating points"""
 eps = 10**-6
 
@@ -32,7 +36,7 @@ def is_numeric(N):
     else:
         return is_num(N)
 
-class Vector(object):
+class Vector:
     """A Vector represents a mathematical vector for any dimension.
 
     **Overloaded Operations**
@@ -55,9 +59,9 @@ class Vector(object):
     the other argument may be any form of numeric collection of the same
     dimension.
     """
-    __slots__ = '_components'
+    _components: list[Numeric]
 
-    def __init__(self, components):
+    def __init__(self, components: Iterable[Numeric]):
         """Create a vector from `components`
 
         `components` should be a collection of numeric values. Initializing
@@ -98,10 +102,19 @@ class Vector(object):
         self._components[i] = value
 
     def __eq__(self, other):
+
+        # false if other is null
+        if other is None:
+            return False
+
+        # error if components have different dimensions
         if len(self) != len(other):
-            raise ValueError("Vectors of different dimensions cannot be " +
-                             "compared")
-        return False not in [abs(a-b) < eps for a, b in zip(self, other)]
+            message = f"Can't compare a vector of dimension {len(self)} " \
+                      f"with another vector of dimension {len(other)}!"
+            raise ValueError(message)
+
+        # false if any components aren't equal
+        return all(a == b for a, b in zip(self, other))
 
     def __add__(self, other):
         if not is_numeric(other):
