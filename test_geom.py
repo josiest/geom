@@ -12,6 +12,7 @@ def test_epsilon():
         geom.set_tolerance(0)
     with pytest.raises(ValueError):
         geom.set_tolerance(-1)
+    geom.set_tolerance(10 ** -6)
 
 def test_is_numeric():
     assert(geom.is_numeric(3))
