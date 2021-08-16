@@ -22,7 +22,6 @@ Reference
 
 Functions
 ---------
-.. autofunction:: set_tolerance
 .. autofunction:: is_numeric
 
 Classes
