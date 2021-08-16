@@ -8,21 +8,8 @@ from typing import TypeVar
 from collections.abc import Iterable
 Numeric = TypeVar("Numeric", int, float, numbers.Number)
 
-"""Error tolerance used to compare floating points"""
-eps = 10**-6
-
-def set_tolerance(epsilon):
-    """Set the error tolerance for which to compare floating point numbers.
-
-    `TypeError` is raised if `epsilon` isn't numeric. `ValueError` is raised if
-    `epsilon` isn't positive.
-    """
-    global eps
-    if not isinstance(epsilon, numbers.Number) or isinstance(epsilon, bool):
-        raise TypeError("epsilon must be a positive number")
-    if epsilon <= 0:
-        raise ValueError("epsilon must be positive")
-    eps = epsilon
+EPSILON: float = 10**-6
+"""A reasonably small constant to use for error tolerance."""
 
 def is_numeric(N):
     """Determine if `N` is numeric.

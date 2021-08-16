@@ -15,7 +15,7 @@ assert(geom_long_description is not None)
 
 setuptools.setup(
     name='geom',
-    version='0.1.1',
+    version='0.3.0',
     license='MIT',
     description='Useful functions and classes for geometry',
     author='Josie Thompson',

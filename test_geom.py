@@ -2,17 +2,6 @@ import geom
 import pytest
 import math
 
-def test_epsilon():
-    assert(abs(geom.eps - 0.0001) < 0.0001)
-    geom.set_tolerance(0.01)
-    assert(abs(geom.eps - 0.01) < 0.00001)
-    with pytest.raises(TypeError):
-        geom.set_tolerance('0.001')
-    with pytest.raises(ValueError):
-        geom.set_tolerance(0)
-    with pytest.raises(ValueError):
-        geom.set_tolerance(-1)
-
 def test_is_numeric():
     assert(geom.is_numeric(3))
     assert(not geom.is_numeric('3'))
@@ -236,7 +225,6 @@ def test_vecdot():
 def test_veccross():
     A = ((0, 0, 0), (1.0, 0, 0), (-300000, 20003, -0.020012))
     b = (3, 4, 5)
-    geom.set_tolerance(0.001)
     expected = ((0, 0, 0), (0, -5.0, 4.0), (100015.08005, 1499999.939964,
                                             -1260009))
 
@@ -276,7 +264,6 @@ def test_veccross():
                 eval(test.format('blv', 'bl2'))
 
 def test_circinit():
-    geom.set_tolerance(0.000001)
     centers = ((0, 0), (-0.0001, -0.00023), (3002.0002, -4003.2093))
     radii = (0, 0.00032, 5.0021)
     for p, r in zip(centers, radii):
@@ -285,7 +272,7 @@ def test_circinit():
         c1._radius = r
         c2 = geom.Circle(p, r)
         assert(c1.center == c2.center)
-        assert(abs(c1.radius-c2.radius) < geom.eps)
+        assert(abs(c1.radius-c2.radius) < geom.EPSILON)
 
     with pytest.raises(TypeError):
         geom.Circle('{1, 2}', 3)
@@ -312,7 +299,6 @@ def test_circinit():
         geom.Circle((20, 30), -39)
 
 def test_circarea():
-    geom.set_tolerance(0.000001)
     centers = ((0, 0), (-1.0, 1.0), (10000, 0.000001), (-7892822, 1902383))
     radii = (33.19, 0, 0.02003, 78892)
     areas = (0, 16*math.pi, 0.000025, 3423423)
@@ -320,9 +306,9 @@ def test_circarea():
     ers = (0, 4, 0.00282095, 1043.8914625)
     for center, r, area, ea, er in zip(centers, radii, areas, eas, ers):
         c = geom.Circle(center, r)
-        assert(abs(c.area-ea) < geom.eps)
+        assert(abs(c.area-ea) < geom.EPSILON)
         c.area = area
-        assert(abs(c.radius-er) < geom.eps)
+        assert(abs(c.radius-er) < geom.EPSILON)
     c = geom.Circle((0,0),1)
     tests = (True, "3.4", (5, 4))
     for test in tests:
@@ -339,9 +325,9 @@ def test_circumference():
     ers = (0, 10, 0.00254648, 463187.3576408)
     for p, r, c, ec, er in zip(centers, radii, circumferences, ecs, ers):
         circle = geom.Circle(p, r)
-        assert(abs(circle.circumference-ec) < geom.eps)
+        assert(abs(circle.circumference-ec) < geom.EPSILON)
         circle.circumference = c
-        assert(abs(circle.radius-er) < geom.eps)
+        assert(abs(circle.radius-er) < geom.EPSILON)
     c = geom.Circle((0,0),1)
     tests = (False, '33232', (5.0, 92.1, 2329))
     for test in tests:
@@ -363,16 +349,16 @@ def test_circscale():
     for p, r, er4, er5, am in zip(centers, radii, ER4, ER5, AM):
         circle = geom.Circle(p, r)
         test = circle.scaled_to(m)
-        assert(abs(test.radius-er1) < geom.eps)
-        assert(abs(circle.radius-r) < geom.eps)
+        assert(abs(test.radius-er1) < geom.EPSILON)
+        assert(abs(circle.radius-r) < geom.EPSILON)
         test = circle.scaled_to(m, 'circumference')
-        assert(abs(test.radius-er2) < geom.eps)
+        assert(abs(test.radius-er2) < geom.EPSILON)
         test = circle.scaled_to(m, 'area')
-        assert(abs(test.radius-er3) < geom.eps)
+        assert(abs(test.radius-er3) < geom.EPSILON)
         test = circle.scaled_by(m)
-        assert(abs(test.radius-er4) < geom.eps)
+        assert(abs(test.radius-er4) < geom.EPSILON)
         test = circle.scaled_by(am, 'area')
-        assert(abs(test.radius-er5) < geom.eps)
+        assert(abs(test.radius-er5) < geom.EPSILON)
 
     circle = geom.Circle((0,0), 1)
     gat = ('radius', 'circumference', 'area')
@@ -439,7 +425,6 @@ def test_circmoved():
             circle.moved_by(vec)
 
 def test_circ_intersects():
-    geom.set_tolerance(10**-6)
     posv1 = ((0, 0), (0.0023, -0.0031), (5782, 8792.1), (4, 5))
     radii1 = (5, 0.00401, 33.9782, 1)
     posv2 = ((0, 0), (-60793, 20034), (5750, 8778), (5, 4))
